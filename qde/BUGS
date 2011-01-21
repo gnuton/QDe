@@ -1,0 +1,9 @@
+* SEEMS FIXED AFTER CODE REWRITE: A new window, if autoresized after being mapped, does not obey "Center window" placement scheme
+* VLC media player open file (when second time issued) freezes the whole window
+* AnticoDeluxe crashed when started from .xinitrc spript - UNCOMFIRMED
+* AnticoDeluxe do not show dock if when started there are another application running; the
+	application is not shown too
+* SystemPreferences.app window icon is broken when runing AnticoDeluxe as standalone WM, in
+	Xephyr all is ok
+* SEEMS FIXED AFTER CODE REWRITE: Some application (mainly GTK and those, having tray icon) does not allow antico-deluxe to catch
+  keyboard events properly. WORKAROUND - click on title bar or repeat shortcut again

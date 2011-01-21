@@ -1,0 +1,78 @@
+QDe is a experimental fork of Antico Deluxe.
+
+Antico Deluxe is a Qt4/X11 Window/Desktop manager for GNU/Linux.
+It is a fork of famous Antico WM/DE by Giuseppe Cigala, http://antico.wordpress.com/
+
+The goal is to create a Window/Desktop manager simple and fast, with very aesthetic
+and familiar look and feel. 
+A very few parameters must be configured from few files, avoiding unnecessary complications, 
+following the K.I.S.S. philosophy. Any other configurations like themes, icons etc. should be avoided.
+If you don't like the heaviness of KDE/Gnome, contribute at development... 
+
+***********
+License
+***********
+GPL2, see COPYING file
+Sound theme files taken from  
+http://gnome-look.org/content/show.php/%22Borealis%22+sound+theme?content=12584
+under artistic license, see
+http://creativecommons.org/licenses/by-sa/3.0/deed.en
+for details.
+
+***********
+FEATURES
+***********
+
+The whole application is based on "$HOME/.config/AnticoDeluxe/AnticoDeluxe.conf" file for now.
+The overall look and feel have to be very close to MacOSX look and feel, which is
+
+	ORIGINAL WORK FROM APPLE.INC
+
+Project consist of:
+1. AMELIB - support library - should be keep as small as possible, with very few classes.
+2. Desktop without icons for now.
+3. The Top Bar with system and applications menu, and few useful widgets/plugins.
+4. The bottom Dock, which acts as taskbar and iconic application launcher.
+5. NOT STARTED: File Manager
+6. NOT STARTED: System Preferences app.
+7. NOT STARTED: some day-to-day use applications like text editor, picture viewer etc.
+8. NOT STARTED: Login Manager
+
+***********
+INSTALL & TESTING
+***********
+Warning: all parts of the project are subject of heavy development and frequent
+amelib APIs or other changes may occur. It is recomended to remove all previously installed
+binary files, libraries, include headers and configurations.
+
+Extract, compile and install the usual way (Qt4):
+qmake
+make
+make install
+
+The application will be installed in /usr/bin dir.
+To test the window manager, type on shell:
+
+DISPLAY=:0
+Xephyr :1 -ac -screen 1000x800 & DISPLAY=:1; /usr/bin/antico-deluxe
+
+also you may use uncluded ./adx-xephyr script
+
+or use provided XSession script for starting from login manager.
+
+
+***********
+FUTURE
+***********
+see TODO file.
+
+***********
+THANKS
+***********
+Giuseppe Cigala, http://antico.wordpress.com/ for his great Antico WM	from where I was inspired...
+Matteo Bertozzi http://th30z.netsons.org/ for using his great MACOSX style widgets
+Tomasz Ziobrowski, http://www.3electrons.com for his great wall clock widget
+Borislav Gerassimov for testing, building and ideas
+Ti.Eugene for testing, building and ideas
+
+

@@ -1,0 +1,38 @@
+A PART OF GREAT
+--------------------ORIGINAL README FOLLOWS----------------------
+KDE Sound theme "Borealis"
+Version 0.9a (11/11/2004)
+
+by Ivica Ico Bukvic (SlipStreamScapes)
+ico at fuse net
+http://meowing.ccm.uc.edu/~ico/
+http://kde-look.org/content/show.php?content=12584
+
+
+OVERVIEW
+========
+The goal of this sound theme is to provide "better feel" through use of the subtle aural notifications. The test I always have in my mind while designing the desktop sounds is to imagine having half-dozen (or more) computer stations in the same office or studio and consider whether their simultaneous use (and resulting desktop sounds) would pose as distraction on users and their productivity. Therefore, in order to minimize the "distraction factor" this theme associates many of the common desktop events with brief, mostly non-pitched, but nonetheless pleasing sound sources (a.k.a. effects).
+
+All of the sounds included have been composed (if applicable), recorded, and mastered by me (although a few of them bear resemblance to other OS's sounds). Some of them are leftovers from my previous compositional and production endeavors, while others are entirely new creations.
+
+All sounds are designed and mixed at CD-quality (stereo, 16-bit, 44.1KHz). Ogg version is distributed as 192Kbit stereo files.
+
+
+LICENSE
+=======
+The sound package is provided under the Artistic License with minor additions to it. See below for more info. That being said, if someone wants to merge it with the vanilla KDE project I am completely fine with that and if that will require a license change I would be willing to make appropriate changes to the license.
+
+The only additional clause to this license is as follows:
+
+You may not use these sounds in any non GPL-ed or LGPL-ed software/OS for profit-making purposes. In other words, you may freely distribute it and use it for personal needs however you wish (even in Windows or MacOS), but any commercial endeavors are allowed only if they are associated solely with the GPL-ed and LGPL-ed software which also includes software that exists as both GPL/LGPL and commercial version, i.e. Trolltech's Qt.
+
+
+
+Your votes, comments, and suggestions are most welcome and appreciated. Thanks!
+
+Enjoy!
+
+
+MODIFICATIONS
+=============
+A minor file name modifications made by me: ludmiloff at gmail dot com

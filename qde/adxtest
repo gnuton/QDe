@@ -1,0 +1,53 @@
+#!/bin/sh
+# This script is used for launching an Xephyr session with anticodeluxe desktop.
+# By default it uses the binary inside the wm dir. 
+# If you want to test the installed version (the one in /usr/bin) use the -b parameter.
+
+case "$1" in
+  --help|-h)
+    echo "Usage: $0 [-b]"
+    echo "  -h/--help - shows this message"
+    echo "  -b/--bin  - uses /usr/bin/antico-deluxe instead of wm/antico-deluxe"
+    ;;
+  --bin|-b)
+    if [ -x /usr/bin/antico-deluxe ]; then
+      adx=/usr/bin/antico-deluxe
+    else
+      echo "/usr/bin/antico-deluxe not found, maybe it's not installed?" 
+    fi
+    ;;
+  *)
+    if [ -x wm/antico-deluxe ]; then
+      oldldpath=$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/amelib
+      oldpath=$PATH
+      export PATH=$PATH:$PWD/syspref
+      adx=wm/antico-deluxe
+    else
+      echo "AnticoDeluxe has not been build yet!"
+    fi
+    ;;
+esac
+
+if [ "$adx" != "" ]; then
+  MCOOKIE=$(mcookie)
+  DISPLAY=:0
+
+  xauth add $(hostname)/unix:1 . $MCOOKIE
+  xauth add localhost.localdomain/unix:1 . $MCOOKIE
+
+  Xephyr -ac -screen 1024x640 -br -reset -terminate :1 &
+
+  sleep 2
+
+  DISPLAY=:1 $adx
+
+  xauth remove $(hostname)/unix:1 
+  xauth remove localhost.localdomain/unix:1
+  if [ "$oldpath" != "" ]; then
+    export PATH=$oldpath
+  fi
+  if [ "$oldldpath" != "" ]; then
+    export LD_LIBRARY_PATH=$oldldpath
+  fi
+fi

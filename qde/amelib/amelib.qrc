@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/sysicons">
+        <file alias="action0.png">icons/action0.png</file>
+        <file alias="action1.png">icons/action1.png</file>
+        <file alias="add0.png">icons/add0.png</file>
+        <file alias="add1.png">icons/add1.png</file>
+        <file alias="columns0.png">icons/columns0.png</file>
+        <file alias="columns1.png">icons/columns1.png</file>
+        <file alias="go-home0.png">icons/go-home0.png</file>
+        <file alias="go-home1.png">icons/go-home1.png</file>
+        <file alias="go-prev0.png">icons/go-prev0.png</file>
+        <file alias="go-prev1.png">icons/go-prev1.png</file>
+        <file alias="go-next0.png">icons/go-next0.png</file>
+        <file alias="go-next1.png">icons/go-next1.png</file>
+        <file alias="icons0.png">icons/icons0.png</file>
+        <file alias="icons1,png">icons/icons1.png</file>
+        <file alias="info0.png">icons/Info0.png</file>
+        <file alias="info1.png">icons/Info1.png</file>
+        <file alias="list0.png">icons/list0.png</file>
+        <file alias="list1.png">icons/list1.png</file>
+        <file alias="reload0.png">icons/reload0.png</file>
+        <file alias="reload1,png">icons/reload1.png</file>
+        <file alias="remove0.png">icons/remove0.png</file>
+        <file alias="remove1.png">icons/remove1.png</file>
+        <file alias="helpbtn.png">icons/helpbtn.png</file>
+    </qresource>
+</RCC>

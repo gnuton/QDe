@@ -1,0 +1,35 @@
+AmeLib is a QT4 based small support library for Antico Deluxe WM/DE.
+The goal is to create very small, but useful set of classes and widgets for
+easy application bulding with a great look and feel.
+
+***********
+License
+***********
+GPL2, see COPYING file
+
+***********
+DOCUMENTATION & FEATURES
+***********
+TO BE DONE
+
+***********
+DEVELOPMENT
+***********
+Extract, compile and install the usual way (Qt4):
+qmake
+make
+make install
+
+The library will be installed in /usr/local dir.
+
+
+***********
+FUTURE
+***********
+see TODO file.
+
+***********
+THANKS
+***********
+Thanks to Matteo Bertozzi (http://th30z.netsons.org/) for using his great MACOSX style widgets
+

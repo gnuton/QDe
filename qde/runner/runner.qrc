@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/applications.png</file>
+        <file>icons/appsettings.png</file>
+        <file>icons/desktop.png</file>
+        <file>icons/documents.png</file>
+        <file>icons/downloads.png</file>
+        <file>icons/folder-x.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/binary.png</file>
+        <file>icons/home.png</file>
+        <file>icons/music.png</file>
+        <file>icons/personal.png</file>
+        <file>icons/system.png</file>
+        <file>icons/trash-empty.png</file>
+        <file>icons/trash-full.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,2 @@
+#include "selectablewidget.h"
+

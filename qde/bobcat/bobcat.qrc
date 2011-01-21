@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/pushbuttons">
+        <file alias="bi-left.png">images/bi-left.png</file>
+        <file alias="bi-mid.png">images/bi-mid.png</file>
+        <file alias="bi-right.png">images/bi-right.png</file>
+        <file alias="bn-left.png">images/bn-left.png</file>
+        <file alias="bn-mid.png">images/bn-mid.png</file>
+        <file alias="bn-right.png">images/bn-right.png</file>
+        <file alias="bp-left.png">images/bp-left.png</file>
+        <file alias="bp-mid.png">images/bp-mid.png</file>
+        <file alias="bp-right.png">images/bp-right.png</file>
+    </qresource>
+</RCC>

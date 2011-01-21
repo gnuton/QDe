@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/tool/lock.png</file>
+        <file>icons/tool/unlock.png</file>
+        <file>icons/object/date-time.png</file>
+        <file>icons/tool/folder.png</file>
+        <file>icons/tool/question.png</file>
+        <file>icons/tool/go-previous.png</file>
+        <file>icons/tool/plus.png</file>
+        <file>icons/tool/minus.png</file>
+        <file>icons/tool/go-next.png</file>
+        <file>icons/object/dock.png</file>
+        <file>icons/object/language.png</file>
+        <file>icons/object/appearance.png</file>
+        <file>icons/object/screensaver.png</file>
+        <file>icons/object/desktop.png</file>
+        <file>icons/object/system-preferences.png</file>
+        <file>icons/object/sound.png</file>
+    </qresource>
+</RCC>

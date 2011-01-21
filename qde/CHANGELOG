@@ -1,0 +1,80 @@
+***********
+CHANGELOG
+***********
+03/03/09: Some fixes in SoundVolume panel widget, need more polishment
+28/02/09: QMMP modules partially rejected, now AmeSystemSound is based on ogg123 code (http://www.xiph.org/) 
+24/02/09: Try some QMMP (http://qmmp.ylsoftware.com/index_en.php) modules for reimplementing AmeSystemSound class
+		  with play sound and mixer ability
+12/02/09: A new top panel widget - SoundVolume mixer
+09/02/09: Add shortcut to SystemPreferences.app "Dock" module in System menu; Focus next topmost window when
+		  destroying/close a window;
+08/02/09: Dockbar show/hide functions in system menu and SystemPreferences.app "Dock" module
+04/02/04: avoid X11 resize request when resizing window by hand;
+03/02/09: AmeNETWm class moved from Amelib to window manager; new window decoration item - bottom bar;
+		  windows can be moved by dragging title bar or bottom bar; resize window by dragging bottom right corner; 
+31/01/09: total rewrite/class renaming + some copy/paste of window manager code - new X11 events filter routine; 
+		  if application does not provide its own icon, use default one
+29/01/09: work on keyboard catching events - still buggy
+28/01/09: AmeIcon class improvement; ALT-TAB shortcut for switching windows shiny new alt-tab dialog
+27/01/09: some classes renaming into wm directory;
+26/01/09: catching keyboard events hacks; application can change its window title on the fly;
+23/01/09: new AmeSystemSound class (AMELIB), SystemPreferences.app Date&Time module uses it;
+		  sound theme included under 
+		  Creative Commons by-sa license (http://creativecommons.org/licenses/by-sa/3.0/deed.en),
+		  the theme is taken from http://gnome-look.org/content/show.php/%22Borealis%22+sound+theme?content=12584
+18/01/09: work on AmeUser & AmeUserProcess classes (AMELIB); new AmeSudoDlg class;
+		  SystemPreferences.app Date&Time module seems finished;
+15/01/09: Fix compile time errors; Fix a bug in desktop module - when started first time, AnticoDeluxe
+		  cannot find wallpaper, but not changed background to default blue - now fixed;
+		  changed the default installation paths to /usr & /usr/include & /usr/share/themes
+11/01/09: work on some AmeLib classes - AmeUser and AmeUserProcess - needed for executing some
+		  external programs as different user or via sudo - not finished
+05/01/09: Fixed compile time error in mime.cpp, thanks to Stefan Koelling; Preparing for beta1
+04/01/09: very, very hard work to implement key bindings - for now ALT-F4 - close window and
+		  ALT+F9 - Show/Hide Window implemented - the keybindings are fixed and cannot be changed
+02/01/09: work on AmeLib - a class "PasswordDlg" added -SystemPreferences.app module "Date&Time"
+		  now uses this;
+01/01/09: Dialog windows does not have win buttons now; Splash screens are not decorated now;
+		  Double mouse click on window titlebar minimize the window; more work on "Appearance" 
+		  module in SystemPreferences.app - user can change Qt4 style now
+30/12/08: work on SystemPreferences "changeWallpaper" module - seems finished except help button;
+		  remove white space between client window and tittle bar; Dock bar is now resizeable via
+		  SystemPreferences "Dock" module; Changed default location when a window is first
+          mapped on screen; fixed stacking order bug when deiconify a window by clicking on a dock
+		  icon;	initial inject the Analog Clock code from Tomasz Ziobrowski, http://www.3electrons.com
+29/12/08: "Highlight color disappear" bug workaround; SystemPreferences bug fix - icons for modules
+		  are not installed; Small style enchancement in AmeStaticIconList; HideOthers menu working;
+		  small changes in .pro files - including headers seems not working well
+28/12/08: Window title is now centered; maximized windows does not cover topbar anymore;
+		  added some experimentall shortcuts - not working well; ShowDesktop icon small 
+		  enchancement; Added new SystemPreferences module - look and feel - incomplete.
+27/12/08: AnticoDeluxe SystemPreferences.app - initial work (changeWallpaper), still rough though,
+		  this app uses some new classes in AmeLib; System Preferences menu working;
+		  bug fixes in X11 event handler -WM_NORMAL_HINTS handling now works even if the window 
+		  supply invalid sizes; focus handling enchancement
+26/12/08: AmeMime class added to AmeLib - thanks to Matteo Bertozzi <theo.bertozzi@gmail.com>
+23/12/08: little play with AmeLib - AmeIcon improved, AmeIconLink and AmeStaticIconList 
+		  classes added
+22/12/08: more work on titlebar style - inactive windows also have inactive window buttons;
+21/12/08: small size and speed optimizations; XSizeHints bug fix - I hope;
+		  new window title bar drawing and style; more focusing enhancement;
+		  more hacks on "Current Application" menu - now "Hide All" item working;
+		  more old antico code removal;
+20/12/08: more hacks on "Current Application" menu; added Xsession script ant login 
+		  manager .desktop file; removed old antico wallpaper config - now paint a desktop
+		  with a solid color
+19/12/08: removed old antico launcher icon, config manager and runner dialogs
+18/12/08: merging the panel and wm sources into one dir; finish get system info for 
+		  "About this computer" dialog
+17/12/08: work on "Show desktop" button - seems working now; removed "Software management" from
+		  "System Menu" for consistency, until I find a way for clear package management on 
+          different distros; change stacking order in a way to ensure the dock is above all windows;
+16/12/08: add nice restart and shutdown dialogs. Restart and Shutdown function works as expected;
+		  removed systray and dateclock from antico
+14/12/08: add "Current Application" menu on topbar (unfinished);
+		  various bugfixes, cleanups and AmeLib integrations;
+		  add nice logout dialog; add nice about dialog (unfinished)
+09/12/08: link "Logout ..." topbar menu item to WM quit routine
+04/12/08: add Mac OSX like top bar and initial integration with Antico WM
+
+ 

@@ -1,0 +1,29 @@
+<RCC>
+  <qresource>
+    <file>default/volume2.png</file>
+    <file>default/volume3.png</file>
+    <file>default/volume1-active.png</file>
+    <file>default/volume1.png</file>
+    <file>default/volume2-active.png</file>
+    <file>default/volume3-active.png</file>
+    <file>default/volume0.png</file>
+    <file>default/volume0-active.png</file>
+    <file>default/appicon.png</file>
+    <file>default/close-btn.png</file>
+    <file>default/close-btn-active.png</file>
+    <file>default/maximize-btn.png</file>
+    <file>default/ame-logo-active.png</file>
+    <file>default/minimize-btn.png</file>
+    <file>default/minimize-btn-active.png</file>
+    <file>default/maximize-btn-active.png</file>
+    <file>default/win-btn-inactive.png</file>
+    <file>default/show-desk.png</file>
+    <file>default/show-desk-active.png</file>
+    <file>default/ame-logo.png</file>
+    <file>icons/antico.png</file>
+    <file>icons/halt.png</file>
+    <file>icons/logout.png</file>
+    <file>icons/restart.png</file>
+    <file>icons/sleep.png</file>
+  </qresource>
+</RCC>

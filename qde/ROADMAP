@@ -1,0 +1,38 @@
+***********
+ROADMAP
+***********
+
+VERSION 0.2
+* WORK IN PROGRESS: Finish "Current App." menu, show/hide functions are buggy/incomplete
+* WORK IN PROGRESS: Remove ConfigManager code from old Antico and replace it with System Preferences app,
+  currently only with "change wallpaper" and "change colors" option 
+
+* DONE: Change the window decoration style with MacOSX like one, add maximize button
+* DONE: Make the whole project installable, build and install both AMELIB and window manager
+  from single .pro file
+* DONE: Finish "About this computer" dialog - fill it with proper system info
+* DONE: Finish "Show desktop" button - seems does not working
+* DONE: Remove some unused menu items from System Menu - "Software management"
+* DONE: All windows should be placed under the dock and never raised above the dock
+
+
+VERSION 0.3
+* PARTIALLY DONE: Write a code for some keyboard shortcuts
+* Write a simple MacOSX like dock, based on Antico one
+* Write sound volume control, battery and keyboard switcher applets for topbar
+* Improve SystemPreferences app, write some more modules 
+
+VERSION 0.4
+* Replace Antico simple desktop with OpenGL widget for nice animation
+* Enchance the dock functionality
+* Add system notification bubbles
+
+VERSION 0.5
+* Write a simple file manager with AMELIB components
+* Enchance the dock functionality
+* Enchance the desktop widget
+
+VERSION 0.6
+* Write some example, but useful applications with AMELIB, like Terminal and Text Editor
+* Enchance the file manager
+

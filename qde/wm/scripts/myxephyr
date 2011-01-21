@@ -1,0 +1,14 @@
+#!/bin/sh
+MCOOKIE=$(mcookie)
+
+DISPLAY=:0
+
+Xephyr -ac -screen 1024x640 -br -reset -terminate :1 &
+
+xauth add $(hostname)/unix:1 . $MCOOKIE
+xauth add localhost.localdomain/unix:1 . $MCOOKIE
+
+DISPLAY=:1 ../antico-deluxe
+
+xauth remove $(hostname)/unix:1 
+xauth remove localhost.localdomain/unix:1
