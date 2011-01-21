@@ -1,0 +1,14 @@
+Source: qde 
+Section: universe/x11
+Priority: extra
+Maintainer: Antonio Aloisio <gnuton@gnuton.org>
+Build-Depends: cdbs, debhelper (>= 7.0.50~), libqt4-dev, libphonon-dev, libxkbfile-dev
+Standards-Version: 3.8.4
+Homepage: 
+#Vcs-Git: https://github.com/gnuton/QDe
+
+Package: qde
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Lightweight Qt Desktop based on Antico Deluxe
+ Lightweight Qt Desktop based on Antico Deluxe
