@@ -2,7 +2,7 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/qmake.mk
-include /usr/share/cdbs/1/rules/dpatch.mk
+#include /usr/share/cdbs/1/rules/dpatch.mk
 
 # Add here any variable or target overrides you need.
 DEB_DH_INSTALL_SOURCEDIR = debian/tmp

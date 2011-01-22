@@ -1,14 +1,12 @@
-Source: qde 
+Source: antico-deluxe 
 Section: universe/x11
 Priority: extra
 Maintainer: Antonio Aloisio <gnuton@gnuton.org>
-Build-Depends: cdbs, debhelper (>= 7.0.50~), libqt4-dev, libphonon-dev, libxkbfile-dev
+Build-Depends: cdbs, debhelper (>= 7.0.50~), pkg-config, libqt4-dev, libphonon-dev, libxkbfile-dev, libasound2-dev, libxext-dev, libxrender-dev
 Standards-Version: 3.8.4
-Homepage: 
-#Vcs-Git: https://github.com/gnuton/QDe
 
-Package: qde
+Package: antico-deluxe 
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Lightweight Qt Desktop based on Antico Deluxe
- Lightweight Qt Desktop based on Antico Deluxe
+Description: Lightweight Qt Desktop
+ Lightweight Qt Desktop

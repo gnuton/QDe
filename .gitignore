@@ -2,3 +2,6 @@
 Makefile
 *.changes
 *.deb
+*.user
+.directory
+build/
