@@ -22,8 +22,8 @@ Dockbar::Dockbar(Adx *a, QWidget *parent) : QLabel(parent)
 	setPixmap(QPixmap::fromImage(QImage(dockPix)));
 	setScaledContents(true);
 	
-	timer = new QTimer();
-	hideTimer = new QTimer();
+        timer = new QTimer(this);
+        hideTimer = new QTimer(this);
 	
 	dockState = Dockbar::Normal;
 	setAutoHide(autoHide);

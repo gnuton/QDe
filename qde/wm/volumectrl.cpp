@@ -51,7 +51,7 @@ SliderWidget::SliderWidget(QWidget *parent)
 	connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(onSliderMove(int)));
 	connect(snd, SIGNAL(systemVolumeChanged(int)), this, SLOT(onSystemVolume(int)));
 
-	timer = new QTimer();
+        timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateVolume()));
 	changing = false;
 }
