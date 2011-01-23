@@ -17,6 +17,7 @@ KbSwitch::~KbSwitch()
 
 void KbSwitch::nextLayout()
 {
+	if (layouts.isEmpty()) return;
 	current ++;
 	if (current >= layouts.size()) current = 0;
 	displayLayout();
@@ -25,6 +26,7 @@ void KbSwitch::nextLayout()
 
 void KbSwitch::displayLayout()
 {
+	if (layouts.isEmpty()) return;
 	if (current >= layouts.size()) current = 0;
 	KbLayout l = layouts.at(current);
         QString t = l.layout.left(3).toUpper();
