@@ -24,6 +24,7 @@ public:
 	void nextLayout();
         void displayLayout();
 
+	void initSettings();
 	bool readSettings();
 	bool saveSettings();
 

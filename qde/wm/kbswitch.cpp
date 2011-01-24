@@ -6,6 +6,7 @@ KbSwitch::KbSwitch(Adx *a, Panel *p, QWidget *parent)
 {
 	app = a;
 	setFixedWidth(42);
+	initSettings();
         if (readSettings()) {
                 displayLayout();
         }
@@ -40,6 +41,30 @@ void KbSwitch::displayLayout()
 	qDebug() << cmd;
 	QProcess::startDetached(cmd);
 
+}
+
+
+void KbSwitch::initSettings(){
+	app->stg->beginGroup("Keyboard");
+
+	// Check if AD runs for the first time
+	int size = app->stg->beginReadArray("layouts");
+	app->stg->endArray();
+
+	// Save configuration
+	if (!size){
+		app->stg->setValue("model", "pc104");
+		app->stg->beginWriteArray("layouts");
+		app->stg->setArrayIndex(0);
+		app->stg->setValue("layout", "us");
+		app->stg->setValue("variant", "");
+		app->stg->setValue("name", "USA");
+		app->stg->setValue("order", 1);
+		app->stg->endArray();
+		app->stg->setValue("show_input_mnu", true);
+	}
+	app->stg->endGroup();
+	app->stg->sync();
 }
 
 bool KbSwitch::readSettings()
