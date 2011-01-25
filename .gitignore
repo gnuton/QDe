@@ -1,3 +1,12 @@
+*-build-desktop
+*.app
+moc_*
+*.o
+*.so
+*.so.*
+qrc_*
+ui_*
+debian/
 .svn
 Makefile
 *.changes
@@ -5,3 +14,4 @@ Makefile
 *.user
 .directory
 build/
+PATCH*
