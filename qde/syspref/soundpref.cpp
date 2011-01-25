@@ -55,7 +55,7 @@ SoundPref::SoundPref(QWidget *parent)
 	connect(ui.sndVolFeedbackChk, SIGNAL(clicked()),this, SLOT(onVolumeFeedback()));
 	connect(ui.showCtrlChk, SIGNAL(clicked()), this, SLOT(onShowHideVolumeCtrl()));
 
-	timer = new QTimer();
+        timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkVolume()));
 	timer->start(100);
 
