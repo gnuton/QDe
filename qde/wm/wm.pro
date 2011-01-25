@@ -40,7 +40,8 @@ HEADERS += defs.h \
         volumectrl.h \
         kbswitch.h \
         systray.h \
-        panel.h
+        panel.h \
+    powerindicator.h
 
 SOURCES += main.cpp \
         aboutdlg.cpp \
@@ -67,7 +68,8 @@ SOURCES += main.cpp \
         clock.cpp \
         volumectrl.cpp \
         kbswitch.cpp \
-        systray.cpp
+        systray.cpp \
+    powerindicator.cpp
 
 TARGET = antico-deluxe
 target.path=/usr/bin

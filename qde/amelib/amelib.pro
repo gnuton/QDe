@@ -10,8 +10,7 @@ CONFIG += warn_on \
     release \
     link_pkgconfig
 
-PKGCONFIG += alsa \
-
+PKGCONFIG += alsa
 
 RESOURCES = amelib.qrc
 UI_HEADERS_DIR = forms
@@ -49,7 +48,8 @@ MAIN_HEADERS += \
         icon.h \
         staticiconlist.h \
         passworddlg.h \
-        app.h
+	app.h \
+	powermanager.h
 
 EXTRA_HEADERS +=
 
@@ -82,7 +82,8 @@ FLAT_HEADERS += \
         StaticIconList \
         PasswordDlg \
         IconTheme \
-        AmeApp
+	AmeApp \
+	PowerManager
 
 SOURCES += \
         utils.cpp \
@@ -109,7 +110,8 @@ SOURCES += \
         icon.cpp \
         staticiconlist.cpp \
         passworddlg.cpp \
-        app.cpp
+        app.cpp \
+    powermanager.cpp
 
 SHARE_FILES += \
         sounds/Click.ogg \

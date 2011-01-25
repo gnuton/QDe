@@ -15,6 +15,7 @@
 #include "systray.h"
 #include "adx.h"
 #include "client.h"
+#include "powerindicator.h"
 
 Panel::Panel(Adx *a, QWidget *parent) 
 	: AmePixmapWidget(parent)
@@ -79,6 +80,10 @@ void Panel::setupGui(void)
 	layout->addWidget(kbswitch);
 	showKbdCtrl(show);
 	layout->addSpacing(8);
+
+	pwrIndicator = new PowerIndicator(this);
+	layout->addWidget(pwrIndicator);
+	layout->addSpacing(4);
 
         volume = new VolumeCtrl(this);
 	app->stg->beginGroup("Topbar");

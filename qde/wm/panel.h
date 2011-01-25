@@ -20,6 +20,7 @@ class VolumeCtrl;
 class SystemMenu;
 class KbSwitch;
 class Systray;
+class PowerIndicator;
 
 class Panel : public AmePixmapWidget
 {
@@ -48,6 +49,7 @@ public:
 	CurrentApp *currentApp;
         KbSwitch *kbswitch;
         Systray *tray;
+	PowerIndicator *pwrIndicator;
 
 	// DBus callable function
 	void enableSoundVolumeFeedback(bool);
