@@ -3,7 +3,7 @@
 #include "panel.h"
 
 SliderWidget::SliderWidget(QWidget *parent)
-	:  QWidget(parent)
+	:  QDialog(parent)
 {	
 	QFont f = QFont(font());
 	//f.setBold(true);
@@ -105,7 +105,7 @@ VolumeCtrl::VolumeCtrl(Panel *p, QWidget *parent)
 	can_Activated = false;
 	setFixedWidth(28);
 	setIconSize(QSize(19, 18));	
-	volumeSlider = new SliderWidget();
+	volumeSlider = new SliderWidget(this);
 	
 	connect(volumeSlider, SIGNAL(volumeChanged(int)), this, SLOT(updateIcon(int)));
 	updateIcon(volumeSlider->snd->volume());
@@ -117,7 +117,7 @@ VolumeCtrl::~VolumeCtrl()
 
 void VolumeCtrl::activate()
 {
-	if (!(activated) ) {
+	if (!activated) {
 		panel->deactivateLast(this);
 		volumeSlider->move(this->mapToGlobal(QPoint(0, height())));
 		volumeSlider->updateVolume();

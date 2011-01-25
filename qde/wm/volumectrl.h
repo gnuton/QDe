@@ -6,7 +6,7 @@
 
 class Panel;
 	
-class SliderWidget : public QWidget
+class SliderWidget : public QDialog
 {
 	Q_OBJECT
 public:
