@@ -19,6 +19,7 @@ void Client::getWMNormalHints()
     wingrav = xsizehints->win_gravity;
 
     bool pminsize = false;
+    XFree(xsizehints);
 
     // set max, min and base size (results include window borders)
 
