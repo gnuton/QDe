@@ -2,8 +2,8 @@ TEMPLATE = app
 VERSION = 0.1.98
 
 QT += dbus xml
-CONFIG += qt release
-
+CONFIG += qt release link_pkgconfig
+PKGCONFIG += xfixes x11 xdamage xcomposite
 RESOURCES = theme/std.qrc
 
 UI_HEADERS_DIR = forms
@@ -17,7 +17,7 @@ QMAKE_INCDIR += forms/
 QMAKE_CLEAN += antico-deluxe
 
 INCLUDEPATH += ../amelib /usr/include/ame/
-LIBS += -L../amelib -lame -lX11
+LIBS += -L../amelib -lame
 
 HEADERS += defs.h \
         aboutdlg.h \
@@ -41,7 +41,8 @@ HEADERS += defs.h \
         kbswitch.h \
         systray.h \
         panel.h \
-    powerindicator.h
+    powerindicator.h \
+    compmgr.h
 
 SOURCES += main.cpp \
         aboutdlg.cpp \
@@ -69,7 +70,8 @@ SOURCES += main.cpp \
         volumectrl.cpp \
         kbswitch.cpp \
         systray.cpp \
-    powerindicator.cpp
+    powerindicator.cpp \
+    compmgr.cpp
 
 TARGET = antico-deluxe
 target.path=/usr/bin
