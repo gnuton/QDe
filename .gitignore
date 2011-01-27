@@ -1,3 +1,7 @@
+*.build
+*.upload
+*.gz
+*.dsc
 *-build-desktop
 *.app
 moc_*
