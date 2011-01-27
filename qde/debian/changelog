@@ -1,3 +1,11 @@
+antico-deluxe (0.1.98-0) maverick; urgency=low
+
+  * Fix CTRL+SHIFT crash
+  * Add Battery applet
+  * Fix some memory leaks
+
+ -- Antonio Aloisio <gnuton@gnuton.org>  Tue, 25 Jan 2011 22:45:23 +0300
+
 antico-deluxe (0.1-0) maverick; urgency=low
 
   * Pull from upstream
