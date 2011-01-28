@@ -14,19 +14,20 @@ Desktop::Desktop(Adx *a, QWidget *parent) : AmePixmapWidget(parent)
 	layout = new QHBoxLayout();
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
+	setGeometry(QApplication::desktop()->geometry());
+	QTimer::singleShot(0, this, SLOT(init()));
 }
 
 Desktop::~Desktop()
 {
 }
 
-void Desktop::init(int top_margin)
+void Desktop::init()
 {
         app->stg->beginGroup("Desktop");
 	QString wall_pix = app->stg->value("wallpaper", "").toString();
 	app->stg->endGroup();
 
-	setGeometry(0, top_margin, QApplication::desktop()->width(), QApplication::desktop()->height() - top_margin);
 	// TODO: check is wallpaper file exists, if not - fill background with default blue
         if (wall_pix.isEmpty() || wall_pix.isNull()) {
             setSolidColor(QColor(0x20, 0x60, 0xB0));

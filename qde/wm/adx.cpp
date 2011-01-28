@@ -18,7 +18,12 @@
 #define HAL_PATH "/org/freedesktop/Hal/devices/computer"
 #define HAL_SERVICE "org.freedesktop.Hal.Device.SystemPowerManagement"
 
-Adx::Adx(int &argc, char **argv) : QApplication(argc, argv)
+Adx::Adx(int &argc, char **argv) : QApplication(argc, argv),
+    WMCtrl(0),
+    hal(0),
+    stg(0),
+    alttab(0),
+    client(0)
 {	
 	m_Process = process_Initializing;
 	Atoms::createNetWMAtoms(display());
@@ -29,35 +34,10 @@ Adx::Adx(int &argc, char **argv) : QApplication(argc, argv)
 
 	XGrabKeyboard(display(), rootWindow(), TRUE, GrabModeAsync, GrabModeAsync, CurrentTime);
 	
-	dock = new Dockbar(this);
-	toppanel = new Panel(this);
-	
 	desktop = new Desktop(this);
-	desktop->init(TOP_PANEL_HEIGHT);
-	
 	desktop->show();
-	dock->show();
-	toppanel->currentApp->setCurrent("Desktop", 0);
-	toppanel->show();
-	
-	// DBus interfaces
-	WMCtrl = new DBusAdaptor(this, desktop, dock, &obj);
-	QDBusConnection::sessionBus().registerObject("/", &obj);
-	if (!QDBusConnection::sessionBus().registerService(WM_DBUS_SERVICE)) {
-		qDebug() << "UNABLE TO REGISTER DBUS SERVICE";
-		exit(1);
-	}
-	
-	QDBusConnection bus = QDBusConnection::systemBus();
-	hal = new QDBusInterface(HAL_DOMAIN, HAL_PATH, HAL_SERVICE, bus);
-	
-	alttab = NULL;
-	keygrab = false;
-	ctrlgrab = false;
-	
-	toppanel->sysBtn->rebuildMenu(dock->autoHide);
-	QTimer::singleShot(250, this, SLOT(manageRunningClients()));
-	m_Process = process_Normal;
+
+	QTimer::singleShot(0, this, SLOT(init()));
 }	
 
 Adx::~Adx()
@@ -66,6 +46,29 @@ Adx::~Adx()
 
 void Adx::init()
 {
+    dock = new Dockbar(this);
+    dock->show();
+
+    //FIXME Crash if toppanel is created before dock
+    toppanel = new Panel(this);
+    //desktop->init(TOP_PANEL_HEIGHT);
+    toppanel->show();
+
+    toppanel->currentApp->setCurrent("Desktop", 0);
+
+    // Initialize HAL DBus interfaces
+    WMCtrl = new DBusAdaptor(this, desktop, dock, &obj);
+    QDBusConnection::sessionBus().registerObject("/", &obj);
+    if (QDBusConnection::sessionBus().registerService(WM_DBUS_SERVICE)) {
+	QDBusConnection bus = QDBusConnection::systemBus();
+	hal = new QDBusInterface(HAL_DOMAIN, HAL_PATH, HAL_SERVICE, bus);
+    } else {
+	qWarning() << "UNABLE TO REGISTER DBUS SERVICE";
+    }
+
+    toppanel->sysBtn->rebuildMenu(dock->autoHide);
+    manageRunningClients();
+    m_Process = process_Normal;
 }
 
 // Show Antico Deluxe "About this..." dialog
@@ -207,11 +210,13 @@ void Adx::onLogout()
 
 void Adx::onPCSleep()
 {
-	hal->call("Suspend", 0);
+    if (!hal) return;
+    hal->call("Suspend", 0);
 }
 
 void Adx::onPCRestart()
 {
+    if (!hal) return;
 	QColor col = QApplication::palette().color(QPalette::Highlight);
 	QuitDlg *dlg = new QuitDlg(QuitDlg::fReboot);
 	sysId = dlg->winId();
@@ -229,6 +234,7 @@ void Adx::onPCRestart()
 
 void Adx::onPCShutdown()
 {
+    if (!hal) return;
 	QColor col = QApplication::palette().color(QPalette::Highlight);
 	QuitDlg *dlg = new QuitDlg(QuitDlg::fHalt);
 	sysId = dlg->winId();
@@ -257,7 +263,6 @@ void Adx::setMinimizeOnDblClick(bool active)
 	foreach(client, clients) {
 		client->setDblMinimizeClick(active);
 	}
-
 }
 
 void Adx::wmCleanup()

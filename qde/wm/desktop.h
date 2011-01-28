@@ -23,11 +23,11 @@ class Desktop : public AmePixmapWidget
 public:
     Desktop(Adx *a, QWidget *parent=0);
     ~Desktop();
-    void init(int top_margin);
 
     void loadWallpaper(const QString &path);
 
 public slots:
+    void init();
     void runMenu(QAction *);
 
 private:
