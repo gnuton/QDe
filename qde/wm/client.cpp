@@ -220,8 +220,8 @@ void Client::maximize()
 		n_ph = height();
 		// maximize parent with (0,0) vertex and screen dimension-dockbar height
 		m_pw = desktop->width();
-		m_ph = desktop->height()-dock->height();
-		move(desktop->x(), desktop->y());
+		m_ph = desktop->height() - dock->height() - titlebar->height();
+		move(desktop->x(), desktop->y() + titlebar->height());
 		resize(m_pw, m_ph);
 		// set maximized state
 		maximized = true;
@@ -293,8 +293,8 @@ void Client::titlebarMove(QMouseEvent *event)
 	QPoint p(event->globalPos()-mousepos);
 	if (p.x() <= desktop->x())
 		p.setX(desktop->x());
-    if (p.y() <= desktop->y())
-		p.setY(desktop->y());
+	if (p.y() <= desktop->y() + titlebar->height())
+		p.setY(desktop->y() + titlebar->height());
 	move(p.x(), p.y());
 }
 
