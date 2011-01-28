@@ -12,24 +12,15 @@
 #include "desktop.h"
 
 Client::Client(Window w, Dockbar *dck, Desktop *d, int topbarHeight, bool dblClick, QWidget *parent)
-	: QWidget(parent)
+	: QWidget(parent),
+	clientId(w),
+	titlebar(0),
+	dock(dck),
+	desktop(d),
+	dblClickMinimize(dblClick),
+	tbHeight(topbarHeight) //REMOVE USELESS
 {
-	clientId = w;
-	appName = "";
-	clientName = "";
-	titlebar = NULL;
-	
-	dock = dck;
-	desktop = d;
-
-	keyboardGrabbed = false;
-	dblClickMinimize = dblClick;
-	tbHeight = topbarHeight;
-	resizeState = false;
-	
-	//setAutoFillBackground(false);
-	//setAttribute(Qt::WA_NoSystemBackground);
-	//setAttribute(Qt::WA_OpaquePaintEvent);
+	setAttribute(Qt::WA_TranslucentBackground);
 	setAttribute(Qt::WA_DeleteOnClose);
 	init();
 }
