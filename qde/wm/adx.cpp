@@ -29,9 +29,6 @@ Adx::Adx(int &argc, char **argv) : QApplication(argc, argv)
 
 	XGrabKeyboard(display(), rootWindow(), TRUE, GrabModeAsync, GrabModeAsync, CurrentTime);
 	
-	clients = new ClientList;
-	decors = new ClientList;
-	
 	dock = new Dockbar(this);
 	toppanel = new Panel(this);
 	
@@ -67,6 +64,10 @@ Adx::~Adx()
 {
 }
 
+void Adx::init()
+{
+}
+
 // Show Antico Deluxe "About this..." dialog
 void Adx::onAbout()
 {
@@ -85,7 +86,7 @@ void Adx::onAbout()
 void Adx::minimizeOthers(Client *thisClient)
 {
 	m_Process = process_MinimizingWindows;
-	foreach (client, *clients)
+	foreach (client, clients)
 	{
 		// TODO: check frame/window type. Do not iconify 
 		// some types like splash screen etc.
@@ -99,7 +100,7 @@ void Adx::minimizeOthers(Client *thisClient)
 void Adx::minimizeAll()
 {
 	m_Process = process_MinimizingWindows;
-	foreach(client, *clients) {
+	foreach(client, clients) {
 		// TODO: check frame/window type. Do not iconify
 		// some types like splash screen etc.
 		if (client->clientState == NormalState)
@@ -144,7 +145,7 @@ void Adx::manageRunningClients()
 			continue;
 		XGetWindowAttributes(display(), c_win, &attr);
 		
-		if ((client = clients->value(c_win)) != NULL) {
+		if ((client = clients.value(c_win)) != NULL) {
 			//qDebug() << "map process:" << cwin << "name:" << c_win;
 			client->map();
 		}
@@ -173,8 +174,8 @@ void Adx::focusTopmostClient()
 		c_win = wins[cwin];
 		//qDebug() << "run process:" << cwin << "name:" << c_win;
 		
-		if ((client = decors->value(c_win)) != NULL ||
-			(client = clients->value(c_win)) != NULL) {
+		if ((client = decors.value(c_win)) != NULL ||
+			(client = clients.value(c_win)) != NULL) {
 			if (client->clientState == NormalState) {
 				toppanel->currentApp->setCurrent(client->appName, client);
 				client->setDecorState(true);
@@ -253,7 +254,7 @@ void Adx::setHighlightColor(const QColor &col)
 void Adx::setMinimizeOnDblClick(bool active)
 {
 	minimizeDblClick = active;
-	foreach(client, *clients) {
+	foreach(client, clients) {
 		client->setDblMinimizeClick(active);
 	}
 
@@ -261,15 +262,15 @@ void Adx::setMinimizeOnDblClick(bool active)
 
 void Adx::wmCleanup()
 {
-	foreach(client, *clients) {
+	foreach(client, clients) {
 		qDebug() << "Quit process:" << client->clientId;
 		XRemoveFromSaveSet(display(), client->clientId);
 		XReparentWindow(display(), client->clientId, rootWindow(), client->n_px, client->n_py);
 		client->destroyClient();
 	}
 
-	clients->clear();
-	decors->clear();
+	clients.clear();
+	decors.clear();
 
 	dock->close();
 	toppanel->close();

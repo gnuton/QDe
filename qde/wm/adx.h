@@ -78,6 +78,7 @@ public:
 	void showAll();
 	void onDockIconRemoved(Client *);
 public slots:
+	void init();
 	void onAltTab();
 	void focusTopmostClient();
 	void manageRunningClients();
@@ -98,8 +99,8 @@ public:
 	void setMinimizeOnDblClick(bool);
 
 	// mapped clients & decorations
-	ClientList *clients;
-	ClientList *decors;
+	ClientList clients;
+	ClientList decors;
 
 	// internals
 	int m_Process;
