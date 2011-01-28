@@ -85,10 +85,10 @@ class compmgr : public QObject
 
 public:
     explicit compmgr(QObject *parent = 0);
+    bool x11EventFilter(XEvent* event);
 
 private:
     void init();
-    int eventFilter();
     int get_time_in_milliseconds();
     fade* find_fade(win *w);
     void dequeue_fade(Display *dpy, fade *f);
@@ -120,6 +120,7 @@ private:
     void repair_win(Display *dpy, win *w);
     void map_win(Display *dpy, Window id, unsigned long sequence, Bool fade);
     void finish_unmap_win(Display *dpy, win *w);
+    void unmap_win(Display *dpy, Window id, Bool fade);
     unsigned int get_opacity_prop(Display *dpy, win *w, unsigned int def);
     double get_opacity_percent(Display *dpy, win *w, double def);
     Atom get_wintype_prop(Display * dpy, Window w);
@@ -190,6 +191,10 @@ private:
     int	damage_event, damage_error;
     int	composite_event, composite_error;
     int	render_event, render_error;
+    int	n_expose;
+    int	size_expose;
+    XRectangle *expose_rects;
+    int p;
     Display *dpy;
 };
 

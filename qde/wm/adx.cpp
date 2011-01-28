@@ -11,6 +11,7 @@
 #include "quitdlg.h"
 #include "dbusadaptor.h"
 #include "sysmenu.h"
+#include "compmgr.h"
 
 #define WM_DBUS_SERVICE "org.freedesktop.AnticoDeluxe"
 
@@ -23,7 +24,8 @@ Adx::Adx(int &argc, char **argv) : QApplication(argc, argv),
     hal(0),
     stg(0),
     alttab(0),
-    client(0)
+    client(0),
+    compositor(0)
 {	
 	m_Process = process_Initializing;
 	Atoms::createNetWMAtoms(display());
@@ -46,6 +48,7 @@ Adx::~Adx()
 
 void Adx::init()
 {
+    compositor = new compmgr(this);
     dock = new Dockbar(this);
     dock->show();
 

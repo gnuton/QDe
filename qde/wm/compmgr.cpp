@@ -34,14 +34,14 @@ compmgr::compmgr(QObject *parent) :
     ignore_tail(&ignore_head),
     list(0),
     fade_in_step(0.028),
-    fade_out_step(0.03)
+    fade_out_step(0.03),
+    expose_rects(0)
 {
     init();
 }
-
+#include <QX11Info>
 void compmgr::init()
 {
-    char *display = 0; //FIXME Get display value from Qt
     int composite_major, composite_minor;
     XRenderPictureAttributes	pa;
     bool autoRedirect = false; // true = no fancy effects!
@@ -51,7 +51,7 @@ void compmgr::init()
     int	i;
     struct pollfd   ufd;
 
-    dpy = XOpenDisplay (display);
+    dpy = QX11Info::display();
     if (!dpy)
     {
 	qWarning() << "Can't open display";
@@ -60,8 +60,8 @@ void compmgr::init()
     /* FIXME this doesn't compile */
     //XSetErrorHandler(error);
 
-    /* Uncomment this line only debugging purposes */
-    // XSynchronize (dpy, 1);
+    // Only for debugging
+    XSynchronize (dpy, 1);
 
     scr = DefaultScreen (dpy);
     root = RootWindow (dpy, scr);
@@ -69,29 +69,32 @@ void compmgr::init()
     if (!XRenderQueryExtension (dpy, &render_event, &render_error))
     {
 	fprintf (stderr, "No render extension\n");
-	exit (1);
+	return;
     }
     if (!XQueryExtension (dpy, COMPOSITE_NAME, &composite_opcode,
 			  &composite_event, &composite_error))
     {
 	fprintf (stderr, "No composite extension\n");
-	exit (1);
+	return;
     }
+
     XCompositeQueryVersion (dpy, &composite_major, &composite_minor);
-#if HAS_NAME_WINDOW_PIXMAP
+    qDebug() << "COMPOSITE VERSION" << composite_major << composite_minor;
+
+#if HAS_NAME_WINDOW_PIXMAP // We should check this!
     if (composite_major > 0 || composite_minor >= 2)
 	hasNamePixmap = True;
 #endif
 
     if (!XDamageQueryExtension (dpy, &damage_event, &damage_error))
     {
-	fprintf (stderr, "No damage extension\n");
-	exit (1);
+	qWarning() << "No damage extension";
+	return;
     }
     if (!XFixesQueryExtension (dpy, &xfixes_event, &xfixes_error))
     {
-	fprintf (stderr, "No XFixes extension\n");
-	exit (1);
+	qWarning() << "No XFixes extension";
+	return;
     }
 
     register_cm();
@@ -120,15 +123,16 @@ void compmgr::init()
     root_height = DisplayHeight (dpy, scr);
 
     rootPicture = XRenderCreatePicture (dpy, root,
-					XRenderFindVisualFormat (dpy,
-								 DefaultVisual (dpy, scr)),
+					XRenderFindVisualFormat (dpy, DefaultVisual (dpy, scr)),
 					CPSubwindowMode,
 					&pa);
+
     blackPicture = solid_picture (dpy, True, 1, 0, 0, 0);
     if (compMode == CompServerShadows)
 	transBlackPicture = solid_picture (dpy, True, 0.3, 0, 0, 0);
     allDamage = None;
     clipChanged = True;
+
     XGrabServer (dpy);
     if (autoRedirect)
 	XCompositeRedirectSubwindows (dpy, root, CompositeRedirectAutomatic);
@@ -147,7 +151,135 @@ void compmgr::init()
 	paint_all (dpy, None);
 }
 
-int compmgr::eventFilter(){
+bool compmgr::x11EventFilter(XEvent* event){
+
+    switch (event->type) {
+		case CreateNotify:
+		    qDebug() << "Compositor: CreateNotify event received";
+		    add_win (dpy, event->xcreatewindow.window, 0);
+		    break;
+
+		case ConfigureNotify:
+		    qDebug() << "Compositor: ConfigureNotify event received";
+		    configure_win (dpy, &event->xconfigure);
+		    break;
+		case DestroyNotify:
+		    qDebug() << "Compositor: DestroyNotify event received";
+		    destroy_win (dpy, event->xdestroywindow.window, True, True);
+		    break;
+		case MapNotify:
+		    qDebug() << "Compositor: MapNotify event received";
+		    map_win (dpy, event->xmap.window, event->xmap.serial, True);
+		    break;
+
+		case UnmapNotify:
+		    qDebug() << "Compositor: UnMapNotify event received";
+		    unmap_win (dpy, event->xunmap.window, True);
+		    break;
+		case ReparentNotify:
+		    qDebug() << "Compositor: reparent event received";
+		    if (event->xreparent.parent == root)
+			add_win (dpy, event->xreparent.window, 0);
+		    else
+			destroy_win (dpy, event->xreparent.window, False, True);
+		    break;
+		case CirculateNotify:
+		    qDebug() << "Compositor: circulate event received";
+		    circulate_win (dpy, &event->xcirculate);
+		    break;
+
+		case Expose:
+		    qDebug() << "Compositor: expose event received";
+		    if (event->xexpose.window == root)
+		    {
+			int more = event->xexpose.count + 1;
+			if (n_expose == size_expose)
+			{
+			    if (expose_rects)
+			    {
+				expose_rects = (XRectangle*) realloc (expose_rects,
+							(size_expose + more) *
+							sizeof (XRectangle));
+				size_expose += more;
+			    }
+			    else
+			    {
+				expose_rects = (XRectangle*) malloc (more * sizeof (XRectangle));
+				size_expose = more;
+			    }
+			}
+
+				    /*
+			expose_rects[n_expose].x = event->xexpose.x;
+			expose_rects[n_expose].y = event->xexpose.y;
+			expose_rects[n_expose].width = event->xexpose.width;
+			expose_rects[n_expose].height = event->xexpose.height;
+			n_expose++;
+				    */
+			if (event->xexpose.count == 0)
+			{
+			    expose_root(dpy, root, expose_rects, n_expose);
+			    n_expose = 0;
+			}
+		    }
+		    break;
+
+		case PropertyNotify:
+		    for (p = 0; backgroundProps[p]; p++)
+		    {
+			if (event->xproperty.atom == XInternAtom (dpy, backgroundProps[p], False))
+			{
+			    if (rootTile)
+			    {
+				XClearArea (dpy, root, 0, 0, 0, 0, True);
+				XRenderFreePicture (dpy, rootTile);
+				rootTile = None;
+				break;
+			    }
+			}
+		    }
+#if 0
+		    /* check if Trans property was changed */
+		    if (ev.xproperty.atom == opacityAtom)
+		    {
+			/* reset mode and redraw window */
+			win * w = find_win(dpy, ev.xproperty.window);
+			if (w)
+			{
+			    if (fadeTrans)
+				set_fade (dpy, w, w->opacity*1.0/OPAQUE, get_opacity_percent (dpy, w, 1.0),
+					  fade_out_step, 0, False, True, False);
+			    else
+			    {
+			    w->opacity = get_opacity_prop(dpy, w, OPAQUE);
+			    determine_mode(dpy, w);
+				if (w->shadow)
+				{
+				    XRenderFreePicture (dpy, w->shadow);
+				    w->shadow = None;
+				    w->extents = win_extents (dpy, w);
+				}
+			    }
+			}
+		    }
+		    break;
+#endif
+		default:
+		    if (event->type == damage_event + XDamageNotify)
+			damage_win (dpy, (XDamageNotifyEvent *) event);
+		    break;
+		}
+    if (allDamage )
+	    {
+		static int	paint;
+		paint_all (dpy, allDamage);
+		paint++;
+		XSync (dpy, False);
+		allDamage = None;
+		clipChanged = False;
+	    }
+
+    return false;
 #if 0
 	do {
 	    if (autoRedirect)
@@ -1349,6 +1481,20 @@ void compmgr::finish_unmap_win(Display *dpy, win *w)
     }
 
     clipChanged = True;
+}
+
+void compmgr::unmap_win(Display *dpy, Window id, Bool fade)
+{
+    win *w = find_win (dpy, id);
+    if (!w)
+	return;
+    w->a.map_state = IsUnmapped;
+#if HAS_NAME_WINDOW_PIXMAP
+    if (w->pixmap && fade && fadeWindows)
+	set_fade (dpy, w, w->opacity*1.0/OPAQUE, 0.0, fade_out_step, unmap_callback, False, False, True);
+    else
+#endif
+	finish_unmap_win (dpy, w);
 }
 
 /* Get the opacity prop from window

@@ -19,11 +19,10 @@
 #define MINOR_VERSION 1
 #define MODIFICATION "98-1"
 
-static QApplication::EventFilter prev_x11_event_filter = 0;
-
 class DBusAdaptor;
 class QDBusInterface;
 class AltTabDlg;
+class compmgr;
 
 class Adx : public QApplication
 {
@@ -52,7 +51,8 @@ public:
 	Window sysId;	// system widget/dialog Window id
 
 	// X11 event filter
-	static bool x11_event_filter(void *message, long *result);
+	bool x11EventFilter(XEvent* event);
+	//bool x11_event_filter(void *message, long *result);
 	
 	// X11 event management helper routines
 	void createMyWindow(Window w);
@@ -77,6 +77,7 @@ public:
 	void minimizeAll();
 	void showAll();
 	void onDockIconRemoved(Client *);
+
 public slots:
 	void init();
 	void onAltTab();
@@ -113,6 +114,7 @@ public:
 	AltTabDlg *alttab;
 	bool keygrab, ctrlgrab;
 	Client *client;
+	compmgr *compositor;
 };
 
 #endif

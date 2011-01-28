@@ -11,7 +11,7 @@ int main(int argc, char **argv)
         deluxe = &a;
         //(void) QApplication::desktop();
 
-        prev_x11_event_filter = qApp->setEventFilter(Adx::x11_event_filter);
+	//prev_x11_event_filter = qApp->setEventFilter(Adx::x11_event_filter);
 
         XSelectInput(display(), rootWindow(), KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
                  KeymapStateMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask | FocusChangeMask |
