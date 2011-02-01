@@ -43,6 +43,7 @@ Dockbar::Dockbar(Adx *a, QWidget *parent) : QLabel(parent)
 
 	dockLayout->addWidget(dockFrame);
 	setSizeFactor(dockSizeFactor, false);
+	setWindowOpacity(0.7);
 }
 
 Dockbar::~Dockbar()
