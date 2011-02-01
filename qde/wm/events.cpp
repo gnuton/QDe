@@ -398,7 +398,9 @@ bool Adx::onX11Property(XEvent *event)
 		}
 		else if (event->xproperty.atom == Atoms::atom(Atoms::WM_TRANSIENT_FOR)) {
 			qDebug() << """ PROPERTY NOTIFY *** transients";
-			XGrabServer(display());
+			client->map();
+			client->raise();
+			//XGrabServer(display());
 		}
 		else if (event->xproperty.atom == Atoms::atom(Atoms::NET_WM_USER_TIME)) {
 			//qDebug() << """ PROPERTY NOTIFY *** wm_user_time";
