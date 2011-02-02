@@ -234,8 +234,8 @@ bool Adx::onButtonPress(XEvent *event)
 		toppanel->currentApp->setCurrent("Desktop", NULL);
 		XGrabKeyboard(display(), rootWindow(), TRUE, GrabModeAsync, GrabModeAsync, CurrentTime);
 	} else {
-		if ((client = clients->value(event->xbutton.window)) != NULL ||
-			(client = decors->value(event->xbutton.window)) != NULL)
+		if ((client = clients.value(event->xbutton.window)) != NULL ||
+			(client = decors.value(event->xbutton.window)) != NULL)
 		{
 			XRaiseWindow(display(), client->winId());
 			restack(client);
@@ -262,7 +262,7 @@ bool Adx::onButtonPress(XEvent *event)
 
 bool Adx::onFocusIn(XEvent *event)
 {
-	if ((client = clients->value(event->xany.window)) != NULL) {
+	if ((client = clients.value(event->xany.window)) != NULL) {
 		client->doGrab();
 	}
 	return false;
@@ -271,7 +271,7 @@ bool Adx::onFocusIn(XEvent *event)
 bool Adx::configureRequest(XEvent *event)
 {
 	XWindowChanges wc;
-	if ((client = clients->value(event->xconfigurerequest.window)) != NULL) {
+	if ((client = clients.value(event->xconfigurerequest.window)) != NULL) {
 		qDebug() << "--> configure (map) request p:" << client->winId() << "c:" << event->xconfigurerequest.window;
 			
 		if (event->xconfigurerequest.value_mask & (CWWidth|CWHeight|CWX|CWY)) {
@@ -328,7 +328,7 @@ bool Adx::configureRequest(XEvent *event)
 
 bool Adx::unmapWindow(XEvent *event)
 {
-	if ((client = clients->value(event->xunmap.window)) != NULL) {
+	if ((client = clients.value(event->xunmap.window)) != NULL) {
 		client->unmap();
 		return true;
 	}
@@ -343,9 +343,9 @@ bool Adx::unmapWindow(XEvent *event)
 
 bool Adx::destroyWindow(XEvent *event)
 {
-	if ((client = clients->value(event->xdestroywindow.window)) != NULL) {
-		clients->remove(event->xdestroywindow.window);
-		decors->remove(client->winId());
+	if ((client = clients.value(event->xdestroywindow.window)) != NULL) {
+		clients.remove(event->xdestroywindow.window);
+		decors.remove(client->winId());
 		toppanel->currentApp->setCurrent("Desktop", NULL);
 		client->close();
 		QTimer::singleShot(100, this, SLOT(focusTopmostClient()));
@@ -367,8 +367,8 @@ bool Adx::onX11Property(XEvent *event)
 	//qDebug() << "Atom: " << XGetAtomName(QX11Info::display(), event->xproperty.atom) << '\n';
 	//qDebug() << event->xproperty.window;
 	
-	if ((client = clients->value(event->xproperty.window)) != NULL ||
-		(client = decors->value(event->xproperty.window)) != NULL) {
+	if ((client = clients.value(event->xproperty.window)) != NULL ||
+		(client = decors.value(event->xproperty.window)) != NULL) {
 		if (event->xproperty.atom == Atoms::atom(Atoms::WM_NORMAL_HINTS)) {
 			qDebug() << """ PROPERTY NOTIFY *** wm_normal_hints";
 			client->getWMNormalHints();
@@ -414,12 +414,12 @@ bool Adx::onX11Property(XEvent *event)
 
 void Adx::createMyWindow(Window w)
 {
-	if ((client = clients->value(w)) != NULL) {
+	if ((client = clients.value(w)) != NULL) {
 		client->map();
 	} else {
 		client = new Client(w, dock, desktop, toppanel->height(), minimizeDblClick);
-		clients->insert(w, client);
-		decors->insert(client->winId(), client);
+		clients.insert(w, client);
+		decors.insert(client->winId(), client);
 		toppanel->currentApp->setCurrent(client->appName, client);
 		client->setChildFocus(0, CurrentTime);
 		restack(client);
@@ -428,7 +428,7 @@ void Adx::createMyWindow(Window w)
 
 bool Adx::colormapNotify(XEvent *event)
 {
-	if ((client = clients->value(event->xcolormap.window)) != NULL) {
+	if ((client = clients.value(event->xcolormap.window)) != NULL) {
 		client->setColormaps(event->xcolormap.colormap);
 		return true;
 	}
@@ -437,14 +437,14 @@ bool Adx::colormapNotify(XEvent *event)
 
 void Adx::onAltTab()
 {
-	if (decors->isEmpty()) 
+	if (decors.isEmpty())
 		return;
 	if (alttab != NULL) {
 		delete alttab;
 		alttab = NULL;
 	}
 	
-	alttab = new AltTabDlg(this, toppanel->currentApp->getCurrent(), decors, desktop);
+	alttab = new AltTabDlg(this, toppanel->currentApp->getCurrent(), &decors, desktop);
 	//qDebug() << "ALT-TAB ID=" << alttab->winId();
 	m_Process = process_SwitchingWindows;
 	keygrab = true;
