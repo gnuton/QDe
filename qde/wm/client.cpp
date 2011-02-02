@@ -27,6 +27,7 @@ Client::Client(Window w, Dockbar *dck, Desktop *d, int topbarHeight, bool dblCli
 
 Client::~Client()
 {
+    qDebug() << "CLIENT DESTROYED" << clientId << "with Qt parent:" << winId();
 }
 
 void Client::init()
@@ -38,7 +39,7 @@ void Client::init()
 	XSetWindowBorderWidth(display(), winId(), 0);  //parent
 	
 	XReparentWindow(display(), clientId, winId(), BORDER_WIDTH, Titlebar::getPreferedHeight(0));
-	qDebug() << "Reparent window:" << clientId << "with Qt parent:" << winId();
+	qDebug() << "CLIENT INIT - Reparent window:" << clientId << "with Qt parent:" << winId();
 	
 	XSetWindowAttributes at;
 	at.event_mask = DECOR_EVENT_MASK;
@@ -189,6 +190,7 @@ void Client::setDecorState(bool s)
 
 void Client::iconify()
 {
+	qDebug() << "ICONIFY";
 	unmap();
 	setClientState(IconicState);
 	dock->addClient(this);  // add to dockbar
@@ -196,6 +198,7 @@ void Client::iconify()
 
 void Client::iconifyFast()
 {
+	qDebug() << "ICONIFY FAST";
 	unmap();
 	clientState = IconicState;
 	dock->addClient(this);  // add to dockbar
@@ -203,6 +206,7 @@ void Client::iconifyFast()
 
 void Client::maximize()
 {
+    qDebug() << "MINIMIZE";
 	if (! maximized) {
                 // save parent dimension
 		n_px = x();
@@ -237,15 +241,22 @@ void Client::removeFromDock()
 
 void Client::map()
 {
+	qDebug() << "CLIENT MAP";
 	XUngrabKeyboard(display(), CurrentTime);
 	show();
 	XMapWindow(display(), clientId);
 	setClientState(NormalState);
 	XGrabKeyboard(display(), clientId, TRUE, GrabModeAsync, GrabModeAsync, CurrentTime);
 }
-	
+
+void Client::show(){
+    qDebug() << "SHOW" << clientId;
+    QWidget::show();
+}
+
 void Client::mapFast()
 {
+	qDebug() << "CLIENT MAP FAST";
 	XUngrabKeyboard(display(), CurrentTime);
 	show();
 	XMapWindow(display(), clientId);
@@ -255,11 +266,13 @@ void Client::mapFast()
 
 void Client::unmap()
 {
+	qDebug() << "CLIENT UNMAP";
 	hide();
 }
 
 void Client::destroyClient()
 {
+	qDebug() << "DESTROY CLIENT";
 	if (protDelete) {
 		qDebug() << "ON DESTROY WINDOW (PROT DELETE)";
         Atoms::sendWMProtocols(clientId, Atoms::atom(Atoms::WM_DELETE_WINDOW), CurrentTime);

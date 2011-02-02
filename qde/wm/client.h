@@ -62,6 +62,7 @@ public slots:
         void iconifyFast();
         void maximize();
         void map();
+	void show();
         void mapFast();
         void unmap();
         void removeFromDock();
