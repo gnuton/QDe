@@ -208,6 +208,14 @@ void Client::getServerIcon(Pixmap icon, Pixmap mask)  // get pixmap from server 
 		appIcon = QPixmap(":/default/appicon.png");
 		return;
 	}
+#if 1
+	QBitmap pixMask;
+	QPixmap pix = QPixmap::fromX11Pixmap(icon);
+	if (mask != None){
+	    pixMask = QBitmap::fromX11Pixmap(mask);
+	    pix.setMask(pixMask);
+	}
+#else
 	QPixmap pix(iw, ih);
 	pix.detach();
 	gc = XCreateGC(display(), icon, 0, 0);
@@ -222,7 +230,7 @@ void Client::getServerIcon(Pixmap icon, Pixmap mask)  // get pixmap from server 
 		pix.setMask(bmap);
 		XFreeGC(display(), gc);
 	}
-	
+#endif
 	appIcon = pix.scaledToHeight(dock->height(), Qt::SmoothTransformation);
 }
 
