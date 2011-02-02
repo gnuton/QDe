@@ -88,7 +88,7 @@ public:
 
 private:
     void init();
-    int eventFilter();
+    bool eventFilter();
     int get_time_in_milliseconds();
     fade* find_fade(win *w);
     void dequeue_fade(Display *dpy, fade *f);
@@ -191,6 +191,7 @@ private:
     int	composite_event, composite_error;
     int	render_event, render_error;
     Display *dpy;
+    bool autoRedirect;
 };
 
 #endif // COMPMGR_H

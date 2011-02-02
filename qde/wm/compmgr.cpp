@@ -34,7 +34,8 @@ compmgr::compmgr(QObject *parent) :
     ignore_tail(&ignore_head),
     list(0),
     fade_in_step(0.028),
-    fade_out_step(0.03)
+    fade_out_step(0.03),
+    autoRedirect(true)
 {
     init();
 }
@@ -147,7 +148,8 @@ void compmgr::init()
 	paint_all (dpy, None);
 }
 
-int compmgr::eventFilter(){
+bool compmgr::eventFilter(){
+    return false;
 #if 0
 	do {
 	    if (autoRedirect)

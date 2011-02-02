@@ -20,9 +20,8 @@ Adx *deluxe;
 bool replay;
 bool resend = false;
 
-bool Adx::x11_event_filter(void *message, long *result)
+bool Adx::x11EventFilter(XEvent *event)
 {	
-	XEvent *event = reinterpret_cast<XEvent *>(message);
 	//qDebug() << "EVENT FILTER " << event->type;
 	switch (event->type) {
 		
@@ -122,8 +121,7 @@ bool Adx::x11_event_filter(void *message, long *result)
                         break;
 			
 	}
-	if (prev_x11_event_filter)
-		return prev_x11_event_filter(message, result);
+
 	return false;
 }
 

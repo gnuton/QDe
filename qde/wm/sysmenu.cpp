@@ -109,7 +109,7 @@ void SystemMenu::onDockPref()
 void SystemMenu::onShowHideDock()
 {
 	//qDebug() << "SYSMENU SHOW/HIDE DOCK";
-	int f;
+	int f = 0;
 	QAction *action = qobject_cast<QAction *>(sender());
 	if (app->dock->dockState == Dockbar::Normal) {
 		action->setText("Turn Hiding Off");

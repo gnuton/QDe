@@ -17,9 +17,7 @@
 
 #define MAJOR_VERSION 0
 #define MINOR_VERSION 1
-#define MODIFICATION "98-1"
-
-static QApplication::EventFilter prev_x11_event_filter = 0;
+#define MODIFICATION "98-1-gnuton.org"
 
 class DBusAdaptor;
 class QDBusInterface;
@@ -52,8 +50,8 @@ public:
 	Window sysId;	// system widget/dialog Window id
 
 	// X11 event filter
-	static bool x11_event_filter(void *message, long *result);
-	
+	bool x11EventFilter(XEvent *event);
+
 	// X11 event management helper routines
 	void createMyWindow(Window w);
 	bool destroyWindow(XEvent *);

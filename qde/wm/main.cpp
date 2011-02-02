@@ -32,11 +32,8 @@ int main(int argc, char **argv)
 	debugMode = !qgetenv("ANTICO_DEBUG").isEmpty();
 
         Adx a(argc, argv);
-	qInstallMsgHandler(anticoMessageOutput);
-        deluxe = &a;
-        //(void) QApplication::desktop();
 
-        prev_x11_event_filter = qApp->setEventFilter(Adx::x11_event_filter);
+        deluxe = &a;
 
         XSelectInput(display(), rootWindow(), KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
                  KeymapStateMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask | FocusChangeMask |

@@ -122,6 +122,7 @@ bool Dockbar::removeAll()
 
 void Dockbar::addLauncher(const QString &file)
 {
+    Q_UNUSED(file)
 }
 
 void Dockbar::dragEnterEvent(QDragEnterEvent *event)
