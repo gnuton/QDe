@@ -20,7 +20,12 @@ Client::Client(Window w, Dockbar *dck, Desktop *d, int topbarHeight, bool dblCli
 	dblClickMinimize(dblClick),
 	tbHeight(topbarHeight) //REMOVE USELESS
 {
-	setAttribute(Qt::WA_TranslucentBackground);
+	XWindowAttributes attr;
+	XGetWindowAttributes(display(), clientId, &attr);
+
+	if (attr.depth == 32)
+	    setAttribute(Qt::WA_TranslucentBackground);
+
 	setAttribute(Qt::WA_DeleteOnClose);
 	init();
 }
@@ -60,6 +65,7 @@ void Client::init()
 	n_py = attr.y;
 	base_w = attr.width;
 	base_h = attr.height;
+
 	fixSizes();
 	
 	n_pw = base_w;// + DBL_BORDER_WIDTH;
