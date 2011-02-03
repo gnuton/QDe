@@ -35,7 +35,11 @@ compmgr::compmgr(QObject *parent) :
     list(0),
     fade_in_step(0.028),
     fade_out_step(0.03),
-    autoRedirect(true)
+    autoRedirect(false),
+    n_expose(0),
+    size_expose(0),
+    expose_rects(0),
+    p(0)
 {
     init();
 }
@@ -62,21 +66,21 @@ void compmgr::init()
     //XSetErrorHandler(error);
 
     /* Uncomment this line only debugging purposes */
-    // XSynchronize (dpy, 1);
+    //XSynchronize (dpy, 1);
 
     scr = DefaultScreen (dpy);
     root = RootWindow (dpy, scr);
 
     if (!XRenderQueryExtension (dpy, &render_event, &render_error))
     {
-	fprintf (stderr, "No render extension\n");
-	exit (1);
+	qWarning() << "No render extension";
+	return;
     }
     if (!XQueryExtension (dpy, COMPOSITE_NAME, &composite_opcode,
 			  &composite_event, &composite_error))
     {
-	fprintf (stderr, "No composite extension\n");
-	exit (1);
+	qWarning() << "No composite extension";
+	return;
     }
     XCompositeQueryVersion (dpy, &composite_major, &composite_minor);
 #if HAS_NAME_WINDOW_PIXMAP
@@ -86,13 +90,13 @@ void compmgr::init()
 
     if (!XDamageQueryExtension (dpy, &damage_event, &damage_error))
     {
-	fprintf (stderr, "No damage extension\n");
-	exit (1);
+	qWarning() << "No damage extension";
+	return;
     }
     if (!XFixesQueryExtension (dpy, &xfixes_event, &xfixes_error))
     {
-	fprintf (stderr, "No XFixes extension\n");
-	exit (1);
+	qWarning() << "No XFixes extension";
+	return;
     }
 
     register_cm();
@@ -121,11 +125,11 @@ void compmgr::init()
     root_height = DisplayHeight (dpy, scr);
 
     rootPicture = XRenderCreatePicture (dpy, root,
-					XRenderFindVisualFormat (dpy,
-								 DefaultVisual (dpy, scr)),
-					CPSubwindowMode,
-					&pa);
+					XRenderFindVisualFormat (dpy, DefaultVisual (dpy, scr)),
+					CPSubwindowMode, &pa);
+
     blackPicture = solid_picture (dpy, True, 1, 0, 0, 0);
+
     if (compMode == CompServerShadows)
 	transBlackPicture = solid_picture (dpy, True, 0.3, 0, 0, 0);
     allDamage = None;
@@ -135,11 +139,11 @@ void compmgr::init()
 	XCompositeRedirectSubwindows (dpy, root, CompositeRedirectAutomatic);
     else{
 	XCompositeRedirectSubwindows (dpy, root, CompositeRedirectManual);
-	XSelectInput (dpy, root, SubstructureNotifyMask|ExposureMask|StructureNotifyMask|PropertyChangeMask);
-	XQueryTree (dpy, root, &root_return, &parent_return, &children, &nchildren);
+
+	XQueryTree(dpy, root, &root_return, &parent_return, &children, &nchildren);
 	for (i = 0; i < nchildren; i++)
-	    add_win (dpy, children[i], i ? children[i-1] : None);
-	    XFree (children);
+	    add_win(dpy, children[i], i ? children[i-1] : None);
+	    XFree(children);
     }
     XUngrabServer (dpy);
     ufd.fd = ConnectionNumber (dpy);
@@ -148,142 +152,112 @@ void compmgr::init()
 	paint_all (dpy, None);
 }
 
-bool compmgr::eventFilter(){
-    return false;
-#if 0
-	do {
-	    if (autoRedirect)
-		XFlush (dpy);
-	    if (!QLength (dpy))
+bool compmgr::eventFilter(XEvent *event){
+    if (autoRedirect)
+	XFlush (dpy);
+
+    if (!autoRedirect)
+	switch (event->type) {
+    case CreateNotify:
+	qDebug() << "CompMgr: CreateNotify";
+	add_win (dpy, event->xcreatewindow.window, 0);
+	break;
+    case ConfigureNotify:
+	qDebug() << "CompMgr: ConfigureNotify";
+	configure_win (dpy, &event->xconfigure);
+	break;
+    case DestroyNotify:
+	qDebug() << "CompMgr: DestroyNotify";
+	destroy_win (dpy, event->xdestroywindow.window, True, True);
+	break;
+    case MapNotify:
+	qDebug() << "CompMgr: MapNotify";
+	map_win (dpy, event->xmap.window, event->xmap.serial, True);
+	break;
+    case UnmapNotify:
+	qDebug() << "CompMgr: UnmapNotify";
+	unmap_win(dpy, event->xunmap.window, True);
+	break;
+    case ReparentNotify:
+	qDebug() << "CompMgr: ReparentNotify";
+	if (event->xreparent.parent == root)
+	    add_win (dpy, event->xreparent.window, 0);
+	else
+	    destroy_win (dpy, event->xreparent.window, False, True);
+	break;
+    case CirculateNotify:
+	qDebug() << "CompMgr: CirculateNotify";
+	circulate_win (dpy, &event->xcirculate);
+	break;
+    case Expose:
+	qDebug() << "CompMgr: Expose";
+	if (event->xexpose.window == root)
+	{
+	    int more = event->xexpose.count + 1;
+	    if (n_expose == size_expose)
 	    {
-		 if (poll (&ufd, 1, fade_timeout()) == 0)
-		 {
-		    run_fades (dpy);
+		if (expose_rects)
+		{
+		    expose_rects = (XRectangle*)realloc (expose_rects,
+					    (size_expose + more) *
+					    sizeof (XRectangle));
+		    size_expose += more;
+		}
+		else
+		{
+		    expose_rects = (XRectangle*) malloc (more * sizeof (XRectangle));
+		    size_expose = more;
+		}
+	    }
+	    expose_rects[n_expose].x = event->xexpose.x;
+	    expose_rects[n_expose].y = event->xexpose.y;
+	    expose_rects[n_expose].width = event->xexpose.width;
+	    expose_rects[n_expose].height = event->xexpose.height;
+	    n_expose++;
+	    if (event->xexpose.count == 0)
+	    {
+		expose_root (dpy, root, expose_rects, n_expose);
+		n_expose = 0;
+	    }
+	}
+	break;
+    case PropertyNotify:
+	qDebug() << "CompMgr: PropertyNotify";
+	for (p = 0; backgroundProps[p]; p++)
+	{
+	    if (event->xproperty.atom == XInternAtom (dpy, backgroundProps[p], False))
+	    {
+		if (rootTile)
+		{
+		    XClearArea (dpy, root, 0, 0, 0, 0, True);
+		    XRenderFreePicture (dpy, rootTile);
+		    rootTile = None;
 		    break;
-		 }
+		}
 	    }
 
-	    XNextEvent (dpy, &ev);
-	    if ((ev.type & 0x7f) != KeymapNotify)
-		discard_ignore (dpy, ev.xany.serial);
-#if DEBUG_EVENTS
-	    printf ("event %10.10s serial 0x%08x window 0x%08x\n",
-		    ev_name(&ev), ev_serial (&ev), ev_window (&ev));
-#endif
-	    if (!autoRedirect) switch (ev.type) {
-	    case CreateNotify:
-		add_win (dpy, ev.xcreatewindow.window, 0);
-		break;
-	    case ConfigureNotify:
-		configure_win (dpy, &ev.xconfigure);
-		break;
-	    case DestroyNotify:
-		destroy_win (dpy, ev.xdestroywindow.window, True, True);
-		break;
-	    case MapNotify:
-		map_win (dpy, ev.xmap.window, ev.xmap.serial, True);
-		break;
-	    case UnmapNotify:
-		unmap_win (dpy, ev.xunmap.window, True);
-		break;
-	    case ReparentNotify:
-		if (ev.xreparent.parent == root)
-		    add_win (dpy, ev.xreparent.window, 0);
-		else
-		    destroy_win (dpy, ev.xreparent.window, False, True);
-		break;
-	    case CirculateNotify:
-		circulate_win (dpy, &ev.xcirculate);
-		break;
-	    case Expose:
-		if (ev.xexpose.window == root)
-		{
-		    int more = ev.xexpose.count + 1;
-		    if (n_expose == size_expose)
-		    {
-			if (expose_rects)
-			{
-			    expose_rects = realloc (expose_rects,
-						    (size_expose + more) *
-						    sizeof (XRectangle));
-			    size_expose += more;
-			}
-			else
-			{
-			    expose_rects = malloc (more * sizeof (XRectangle));
-			    size_expose = more;
-			}
-		    }
-		    expose_rects[n_expose].x = ev.xexpose.x;
-		    expose_rects[n_expose].y = ev.xexpose.y;
-		    expose_rects[n_expose].width = ev.xexpose.width;
-		    expose_rects[n_expose].height = ev.xexpose.height;
-		    n_expose++;
-		    if (ev.xexpose.count == 0)
-		    {
-			expose_root (dpy, root, expose_rects, n_expose);
-			n_expose = 0;
-		    }
-		}
-		break;
-	    case PropertyNotify:
-		for (p = 0; backgroundProps[p]; p++)
-		{
-		    if (ev.xproperty.atom == XInternAtom (dpy, backgroundProps[p], False))
-		    {
-			if (rootTile)
-			{
-			    XClearArea (dpy, root, 0, 0, 0, 0, True);
-			    XRenderFreePicture (dpy, rootTile);
-			    rootTile = None;
-			    break;
-			}
-		    }
-		}
-		/* check if Trans property was changed */
-		if (ev.xproperty.atom == opacityAtom)
-		{
-		    /* reset mode and redraw window */
-		    win * w = find_win(dpy, ev.xproperty.window);
-		    if (w)
-		    {
-			if (fadeTrans)
-			    set_fade (dpy, w, w->opacity*1.0/OPAQUE, get_opacity_percent (dpy, w, 1.0),
-				      fade_out_step, 0, False, True, False);
-			else
-			{
-			w->opacity = get_opacity_prop(dpy, w, OPAQUE);
-			determine_mode(dpy, w);
-			    if (w->shadow)
-			    {
-				XRenderFreePicture (dpy, w->shadow);
-				w->shadow = None;
-				w->extents = win_extents (dpy, w);
-			    }
-			}
-		    }
-		}
-		break;
-	    default:
-		if (ev.type == damage_event + XDamageNotify)
-		    damage_win (dpy, (XDamageNotifyEvent *) &ev);
-		break;
-	    }
-	} while (QLength (dpy));
-	if (allDamage && !autoRedirect)
-	{
-	    static int	paint;
-	    paint_all (dpy, allDamage);
-	    paint++;
-	    XSync (dpy, False);
-	    allDamage = None;
-	    clipChanged = False;
 	}
-#endif
+	break;
+    default:
+	if (event->type == damage_event + XDamageNotify){
+	    damage_win(dpy, (XDamageNotifyEvent *) event);
+	}
+	break;
+    }
+    if (allDamage && !autoRedirect)
+    {
+	static int	paint;
+	paint_all(dpy, allDamage);
+	paint++;
+	XSync (dpy, False);
+	allDamage = None;
+	clipChanged = False;
+    }
+    return false;
 }
 
 
-int compmgr::get_time_in_milliseconds ()
+int compmgr::get_time_in_milliseconds()
 {
     struct timeval  tv;
 
@@ -399,8 +373,8 @@ void compmgr::determine_mode(Display *dpy, win *w)
 	XRenderFreePicture (dpy, w->shadowPict);
 	w->shadowPict = None;
     }
-/* CHECK THIS
-    if (w->a.class == InputOnly)
+
+    if (w->a.c_class == InputOnly)
     {
 	format = 0;
     }
@@ -408,7 +382,7 @@ void compmgr::determine_mode(Display *dpy, win *w)
     {
 	format = XRenderFindVisualFormat (dpy, w->a.visual);
     }
-*/
+
     if (format && format->type == PictTypeDirect && format->direct.alphaMask)
     {
 	mode = WINDOW_ARGB;
@@ -493,8 +467,9 @@ XserverRegion compmgr::win_extents(Display *dpy, win *w)
     return XFixesCreateRegion (dpy, &r, 1);
 }
 
-void compmgr::add_damage (Display *dpy, XserverRegion damage)
+void compmgr::add_damage(Display *dpy, XserverRegion damage)
 {
+    qDebug() << "Compositor: addDamage";
     if (allDamage)
     {
 	XFixesUnionRegion (dpy, allDamage, allDamage, damage);
@@ -504,7 +479,7 @@ void compmgr::add_damage (Display *dpy, XserverRegion damage)
 	allDamage = damage;
 }
 
-Picture compmgr::shadow_picture (Display *dpy, double opacity, Picture alpha_pict, int width, int height, int *wp, int *hp)
+Picture compmgr::shadow_picture(Display *dpy, double opacity, Picture alpha_pict, int width, int height, int *wp, int *hp)
 {
     Q_UNUSED(alpha_pict)
 
@@ -987,7 +962,10 @@ Picture compmgr::root_tile(Display *dpy)
     {
 	XRenderColor    c;
 
-	c.red = c.green = c.blue = 0x8080;
+	//c.red = c.green = c.blue = 0x8080;
+	c.red = 0x00ff;
+	c.green = 0xffff;
+	c.blue = 0x00ff;
 	c.alpha = 0xffff;
 	XRenderFillRectangle (dpy, PictOpSrc, picture, &c,
 			      0, 0, 1, 1);
@@ -998,9 +976,9 @@ Picture compmgr::root_tile(Display *dpy)
 void compmgr::paint_root (Display *dpy)
 {
     if (!rootTile)
-	rootTile = root_tile (dpy);
+	rootTile = root_tile(dpy);
 
-    XRenderComposite (dpy, PictOpSrc,
+    XRenderComposite(dpy, PictOpSrc,
 		      rootTile, None, rootBuffer,
 		      0, 0, 0, 0, 0, 0, root_width, root_height);
 }
@@ -1027,6 +1005,7 @@ XserverRegion compmgr::border_size(Display *dpy, win *w)
 
 void compmgr::paint_all(Display *dpy, XserverRegion region)
 {
+    qDebug() << "Compositor: paint all";
     win	*w;
     win	*t = 0;
 
@@ -1037,7 +1016,7 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 	r.y = 0;
 	r.width = root_width;
 	r.height = root_height;
-	region = XFixesCreateRegion (dpy, &r, 1);
+	region = XFixesCreateRegion(dpy, &r, 1);
     }
 #if MONITOR_REPAINT
     rootBuffer = rootPicture;
@@ -1053,14 +1032,13 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 	XFreePixmap (dpy, rootPixmap);
     }
 #endif
-    XFixesSetPictureClipRegion (dpy, rootPicture, 0, 0, region);
+    XFixesSetPictureClipRegion(dpy, rootPicture, 0, 0, region);
 #if MONITOR_REPAINT
-    XRenderComposite (dpy, PictOpSrc, blackPicture, None, rootPicture,
+    XRenderComposite(dpy, PictOpSrc, blackPicture, None, rootPicture,
 		      0, 0, 0, 0, 0, 0, root_width, root_height);
 #endif
-#if DEBUG_REPAINT
-    printf ("paint:");
-#endif
+    qDebug() << "paint:";
+
     for (w = list; w; w = w->next)
     {
 #if CAN_DO_USABLE
@@ -1074,6 +1052,7 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 	if (w->a.x + w->a.width < 1 || w->a.y + w->a.height < 1
 	    || w->a.x >= root_width || w->a.y >= root_height)
 	    continue;
+
 	if (!w->picture)
 	{
 	    XRenderPictureAttributes	pa;
@@ -1082,7 +1061,7 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 
 #if HAS_NAME_WINDOW_PIXMAP
 	    if (hasNamePixmap && !w->pixmap)
-		w->pixmap = XCompositeNameWindowPixmap (dpy, w->id);
+		w->pixmap = XCompositeNameWindowPixmap(dpy, w->id);
 	    if (w->pixmap)
 		draw = w->pixmap;
 #endif
@@ -1093,9 +1072,9 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 					       CPSubwindowMode,
 					       &pa);
 	}
-#if DEBUG_REPAINT
-	printf (" 0x%x", w->id);
-#endif
+
+	qDebug() << "Paint: 0x" <<  w->id;
+
 	if (clipChanged)
 	{
 	    if (w->borderSize)
@@ -1149,10 +1128,7 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 	w->prev_trans = t;
 	t = w;
     }
-#if DEBUG_REPAINT
-    printf ("\n");
-    fflush (stdout);
-#endif
+
     XFixesSetPictureClipRegion (dpy, rootBuffer, 0, 0, region);
     paint_root (dpy);
     for (w = t; w; w = w->prev_trans)
@@ -1245,6 +1221,7 @@ void compmgr::paint_all(Display *dpy, XserverRegion region)
 
 void compmgr::repair_win(Display *dpy, win *w)
 {
+    qDebug() << "Compositor: Repair win";
     XserverRegion   parts;
 
     if (!w->damaged)
@@ -1310,7 +1287,7 @@ void compmgr::finish_unmap_win(Display *dpy, win *w)
 #endif
     if (w->extents != None)
     {
-	add_damage (dpy, w->extents);    /* destroys region */
+	add_damage(dpy, w->extents);    /* destroys region */
 	w->extents = None;
     }
 
@@ -1351,6 +1328,20 @@ void compmgr::finish_unmap_win(Display *dpy, win *w)
     }
 
     clipChanged = True;
+}
+
+void compmgr::unmap_win(Display *dpy, Window id, Bool fade)
+{
+    win *w = find_win (dpy, id);
+    if (!w)
+	return;
+    w->a.map_state = IsUnmapped;
+#if HAS_NAME_WINDOW_PIXMAP
+    if (w->pixmap && fade && fadeWindows)
+	set_fade (dpy, w, w->opacity*1.0/OPAQUE, 0.0, fade_out_step, unmap_callback, False, False, True);
+    else
+#endif
+	finish_unmap_win (dpy, w);
 }
 
 /* Get the opacity prop from window
@@ -1453,6 +1444,7 @@ void compmgr::add_win(Display *dpy, Window id, Window prev)
 
     if (!newWin)
 	return;
+
     if (prev)
     {
 	for (p = &list; *p; p = &(*p)->next)
@@ -1468,6 +1460,7 @@ void compmgr::add_win(Display *dpy, Window id, Window prev)
 	free (newWin);
 	return;
     }
+
     newWin->damaged = 0;
 #if CAN_DO_USABLE
     newWin->usable = False;
@@ -1476,8 +1469,8 @@ void compmgr::add_win(Display *dpy, Window id, Window prev)
     newWin->pixmap = None;
 #endif
     newWin->picture = None;
-    /* FIXME Class is a reserved name in C++
-    if (newWin->a.class == InputOnly)
+    /* FIXME Class is a reserved name in C++ */
+    if (newWin->a.c_class == InputOnly)
     {
 	newWin->damage_sequence = 0;
 	newWin->damage = None;
@@ -1487,7 +1480,7 @@ void compmgr::add_win(Display *dpy, Window id, Window prev)
 	newWin->damage_sequence = NextRequest (dpy);
 	newWin->damage = XDamageCreate (dpy, id, XDamageReportNonEmpty);
     }
-    */
+
     newWin->alphaPict = None;
     newWin->shadowPict = None;
     newWin->borderSize = None;
@@ -1598,7 +1591,7 @@ void compmgr::configure_win(Display *dpy, XConfigureEvent *ce)
 	XserverRegion	extents = win_extents (dpy, w);
 	XFixesUnionRegion (dpy, damage, damage, extents);
 	XFixesDestroyRegion (dpy, extents);
-	add_damage (dpy, damage);
+	add_damage(dpy, damage);
     }
     clipChanged = True;
 }
@@ -1662,7 +1655,7 @@ void compmgr::finish_destroy_win(Display *dpy, Window id, Bool gone)
 	}
 }
 
-/*
+/* FIXME
 #if HAS_NAME_WINDOW_PIXMAP
 static void
 destroy_callback (Display *dpy, win *w, Bool gone)
@@ -1687,6 +1680,7 @@ void compmgr::destroy_win(Display *dpy, Window id, Bool gone, Bool fade)
 
 void compmgr::damage_win(Display *dpy, XDamageNotifyEvent *de)
 {
+    qDebug() << "Compositor: damage_win";
     win	*w = find_win (dpy, de->drawable);
 
     if (!w)
@@ -1784,11 +1778,11 @@ int compmgr::error(Display *dpy, XErrorEvent *ev)
     return 0;
 }
 
-void compmgr::expose_root (Display *dpy, Window root, XRectangle *rects, int nrects)
+void compmgr::expose_root(Display *dpy, Window root, XRectangle *rects, int nrects)
 {
     XserverRegion  region = XFixesCreateRegion (dpy, rects, nrects);
 
-    add_damage (dpy, region);
+    add_damage(dpy, region);
 }
 
 #if DEBUG_EVENTS

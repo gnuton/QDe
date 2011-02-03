@@ -22,6 +22,7 @@
 class DBusAdaptor;
 class QDBusInterface;
 class AltTabDlg;
+class compmgr;
 
 class Adx : public QApplication
 {
@@ -111,6 +112,7 @@ public:
 	AltTabDlg *alttab;
 	bool keygrab, ctrlgrab;
 	Client *client;
+	compmgr *compositorMgr;
 };
 
 #endif

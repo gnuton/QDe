@@ -19,6 +19,10 @@
 #include <X11/extensions/Xdamage.h>
 #include <X11/extensions/Xrender.h>
 
+#define MONITOR_REPAINT 1
+#define CAN_DO_USABLE 0
+#define HAS_NAME_WINDOW_PIXMAP 0
+
 typedef struct _win {
     struct _win		*next;
     Window		id;
@@ -85,10 +89,11 @@ class compmgr : public QObject
 
 public:
     explicit compmgr(QObject *parent = 0);
+    bool eventFilter(XEvent *event);
 
 private:
     void init();
-    bool eventFilter();
+
     int get_time_in_milliseconds();
     fade* find_fade(win *w);
     void dequeue_fade(Display *dpy, fade *f);
@@ -120,6 +125,7 @@ private:
     void repair_win(Display *dpy, win *w);
     void map_win(Display *dpy, Window id, unsigned long sequence, Bool fade);
     void finish_unmap_win(Display *dpy, win *w);
+    void unmap_win(Display *dpy, Window id, Bool fade);
     unsigned int get_opacity_prop(Display *dpy, win *w, unsigned int def);
     double get_opacity_percent(Display *dpy, win *w, double def);
     Atom get_wintype_prop(Display * dpy, Window w);
@@ -192,6 +198,11 @@ private:
     int	render_event, render_error;
     Display *dpy;
     bool autoRedirect;
+    int n_expose, size_expose;
+    XRectangle *expose_rects;
+    int p;
+    Bool usable;		    /* mapped and all damaged at one point */
+    XRectangle damage_bounds;	    /* bounds of damage */
 };
 
 #endif // COMPMGR_H

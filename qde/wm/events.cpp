@@ -10,6 +10,7 @@
 #include "alttab.h"
 #include "kbswitch.h"
 #include "systray.h"
+#include "compmgr.h"
 
 /* defined in the systray spec */
 #define SYSTEM_TRAY_REQUEST_DOCK 0
@@ -22,7 +23,11 @@ bool resend = false;
 
 bool Adx::x11EventFilter(XEvent *event)
 {	
-	//qDebug() << "EVENT FILTER " << event->type;
+
+	if (compositorMgr)
+	    compositorMgr->eventFilter(event);
+
+	//qDebug() << "X11 EVENT FILTER " << event->type;
 	switch (event->type) {
 		
 		case KeyPress:
