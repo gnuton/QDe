@@ -3,6 +3,7 @@
 
 #define ALT_MOD 8
 #define CTRL_MOD 4
+#define CTRLALT_MOD 12
 #define SHIFT_MOD 1
 #define MAC_MOD 64
 
@@ -56,6 +57,13 @@ bool Adx::onHotKey(KeySym sym, uint mod)
 		toppanel->kbswitch->nextLayout();
 	    }break;
 
+	    case XK_Escape:{
+	    qDebug() << "CTRL+ALT+ESC";
+	    if (mod != CTRLALT_MOD) break;
+
+	    QProcess::startDetached("xkill");
+
+	    }break;
 	}
 
 	XAllowEvents(display(), SyncBoth, CurrentTime);
