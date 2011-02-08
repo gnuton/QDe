@@ -88,8 +88,15 @@ class compmgr : public QObject
     Q_OBJECT
 
 public:
+    enum ExtensionsStatus{
+	ExtensionsMissing,
+	ExtensionsOk,
+	ExernalCompositorLaunched // This will be here until the internal compositor is ready
+    };
+
     explicit compmgr(QObject *parent = 0);
     bool eventFilter(XEvent *event);
+    static ExtensionsStatus testRequiredExtensions();
 
 private:
     void init();

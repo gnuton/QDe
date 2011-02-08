@@ -7,6 +7,6 @@ Standards-Version: 3.8.4
 
 Package: antico-deluxe 
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, xcompmgr
 Description: Lightweight Qt Desktop
  Lightweight Qt Desktop

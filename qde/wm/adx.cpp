@@ -72,7 +72,8 @@ void Adx::init()
     manageRunningClients();
     m_Process = process_Normal;
 
-    compositorMgr = new compmgr(this);
+    if (compmgr::testRequiredExtensions() == compmgr::ExtensionsOk)
+	compositorMgr = new compmgr(this);
 }
 
 // Show Antico Deluxe "About this..." dialog
