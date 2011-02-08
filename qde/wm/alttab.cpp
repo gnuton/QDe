@@ -5,7 +5,6 @@ ClientIcon::ClientIcon(Client *client, int scale, QWidget *parent)
 	: AmeIcon(client->appName, client->appIcon, scale, parent)
 {
 	m_Client = client;
-
 }
 
 ClientIcon::~ClientIcon()
@@ -13,9 +12,9 @@ ClientIcon::~ClientIcon()
 }
 
 AltTabDlg::AltTabDlg(Adx *a, Client *active, ClientList *clients, QWidget *parent)
-	: QDialog(parent)
+	: QDialog(parent),
+	app(a)
 {
-	app = a;
 	int h = 0;
 	int w = a->desktop->width();
 	int numIcons = clients->size();
@@ -80,6 +79,11 @@ AltTabDlg::AltTabDlg(Adx *a, Client *active, ClientList *clients, QWidget *paren
 	XUngrabKeyboard(display(), CurrentTime);
 	XSetInputFocus(display(), winId(), None, CurrentTime);
 	XRaiseWindow(display(), winId());
+
+	QPalette p(palette());
+	p.setColor(QPalette::Background, Qt::white);
+	setPalette(p);
+	setWindowOpacity(0.7);
 }
 
 AltTabDlg::~AltTabDlg()
