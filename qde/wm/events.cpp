@@ -155,18 +155,16 @@ void Adx::sendKeyEvent(XEvent *event, long mask)
 
 bool Adx::onKeyPress(XEvent *event)
 {
-	KeySym sym;
-	uint mod;
-	uint keymask1 = Mod1Mask & 0x0F;
-	bool ishotkey = false;
-	sym = (int)XLookupKeysym(&event->xkey, 0);
-	mod = event->xkey.state & keymask1 ;
+	KeySym sym = (int)XLookupKeysym(&event->xkey, 0);
+	uint mod = event->xkey.state;
 
-	qDebug() << sym << mod;
-	if (keygrab) { // a hot key activation
-		ishotkey = onHotKey(sym, mod);
-		if (ishotkey) return true;
+	qDebug() << "SYM" << sym << "MOD" << mod << event->xkey.state;
+
+	if (mod) { // Possible HotKey attivation
+		if (onHotKey(sym, mod))
+		  return true;
 	}
+#if 0
 	if (ctrlgrab && sym == XK_Shift_L) {
 		qDebug() << "CTRL+SHIFT";
 		toppanel->kbswitch->nextLayout();
@@ -176,15 +174,17 @@ bool Adx::onKeyPress(XEvent *event)
 		ctrlgrab = true;
 		return true;
 	}
+
 	if (sym == XK_Alt_L && !keygrab) {
 		keygrab = true;
 		qDebug() << "ALT KEY ACTIVATION";
 		return true;
-	} else { 
-		// redirect Key Press event
-		sendKeyEvent(event, KeyPressMask);
-		return false;
+
 	}
+#endif
+	// redirect Key Press event
+	sendKeyEvent(event, KeyPressMask);
+	return false;
 }
 
 bool Adx::onKeyRelease(XEvent *event)
