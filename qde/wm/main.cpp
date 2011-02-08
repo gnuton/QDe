@@ -30,6 +30,7 @@ void anticoMessageOutput(QtMsgType type, const char *msg)
 int main(int argc, char **argv)
 {
 	debugMode = !qgetenv("ANTICO_DEBUG").isEmpty();
+	qInstallMsgHandler(anticoMessageOutput);
 
         Adx a(argc, argv);
 
