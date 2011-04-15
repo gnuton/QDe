@@ -2,6 +2,7 @@
 #define __SOUNDVOLUME_H
 
 #include "button.h"
+#undef None
 #include <Sound>
 
 class Panel;
